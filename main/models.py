@@ -68,15 +68,5 @@ PRODUCTS = [
         stock=10,
         is_featured=False,
     ),
-     Product(
-        id=uuid.uuid4(),
-        name="Club Edition Jersey",
-        price=70,
-        description="A comfortable jersey for your daily rides and club events.",
-        thumbnail="https://placehold.co/600x400/222/fff?text=Club+Jersey",
-        category="JERSEY",
-        stock=40,
-        is_featured=True,
-    ),
 ]
 
