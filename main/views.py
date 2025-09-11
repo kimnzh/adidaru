@@ -18,7 +18,10 @@ def product_detail(request, product_id):
     View for a single product's detail page.
     """
     # In a real app: product = get_object_or_404(Product, id=product_id)
-    product = next((p for p in PRODUCTS if str(p.id) == str(product_id)), None)
+    product = None
+    for p in PRODUCTS:
+        if str(p.id) == str(product_id):
+            product = p
     if not product:
       # A simple way to handle not found without raising Http404 for this example
       return render(request, 'store/error.html', {'message': 'Product not found.'})
