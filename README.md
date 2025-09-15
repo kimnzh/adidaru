@@ -4,6 +4,8 @@ Kelas : PBP E
 
 Link Deployment: https://muhamad-hakim41-adidaru.pbp.cs.ui.ac.id
 
+# Tugas 2
+
 ## 1. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
 
 - Untuk membuat proyek baru Django, saya mengikuti seluruhnya dari **Tutorial 0**, alasannya supaya sesuai dengan alur deployment yang sudah terdefine untuk pws. Tentu ada beberapa adjustment yang saya tambahkan supaya sesuai dengan kriteria tugas individu, seperti penambahan skema `tugas_individu` dalam env variables.
@@ -45,3 +47,51 @@ Karena proyek Django menggunakan bahasa Python sebagai main language nya. Python
 ## 6. Apakah ada feedback untuk asisten dosen tutorial 1 yang telah kamu kerjakan sebelumnya?
 
 Mungkin lebih perjelas lagi langkah-langkahnya secara verbal, karena kebanyakan teman saya mengerjakan tutorial bermodalkan copas-copas saja.
+
+# Tugas 3
+
+## 1. Jelaskan mengapa kita memerlukan data delivery dalam pengimplementasian sebuah platform?
+
+Data delivery merupakan salah satu aspek krusial dalam sebuah platform, karena peran dari sebuah aplikasi selain untuk memaparkan informasi kepada pengguna, juga harus bisa menerima masukan yang nantinya akan digunakan oleh pengguna ataupun orang lain.
+
+## 2. Menurutmu, mana yang lebih baik antara XML dan JSON? Mengapa JSON lebih populer dibandingkan XML?
+
+Menurut saya, **JSON** lebih baik daripada **XML** karena data mentah **JSON** lebih mudah dibaca daripada **XML**. **JSON** (JavaScript Object Notation) lebih populer daripada **XML** karena lebih sederhana dan cenderung lebih kompatibel dengan web browser, karena kebanyakan web browser menggunakan **JavaScript** sebagai scripting languagenya.
+
+## Jelaskan fungsi dari method `is_valid()` pada form Django dan mengapa kita membutuhkan method tersebut?
+
+Untuk memvalidasi bahwa data yang diperoleh dari form tidak memberikan error apapun. Methid akan mengembalikan nilai `True` jika tidak ada error dan akan mengembalikan nilai `False` jika terdapat error dalam form. Error dapat berupa data yang tidak kompatibel dengan nilai yang seharusnya ataupun melebihi batasan-batasan yang sudah ditentukan oleh program (tipe data, maksimal ukuran data, dll).
+
+## Mengapa kita membutuhkan `csrf_token` saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan `csrf_token` pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?
+
+`csrf_token` adalah token yang di generate aplikasi django dalam suatu session yang dimiliki user. Tujuan dari token ini adalah menghindari percobaan penyerangan oleh pengguna yang tidak memiliki otoritas untuk mengakses, memberi input, atau menerima data dari aplikasi django. Maka dari itu, forms memerlukan `csrf_token`
+
+## Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
+
+- Saya mulai dengan mengimplementasikan 4 function di dalam `views.py` sesuai dengan yang didefinisikan di dalam tutorial.
+- Saya kemudian mengaitkan setiap views tersebut dengan path yang sesuai dengan dengan definisi functionnya dalam `views.py`.
+- Berbeda dengan checklist, saya terlebih dahulu membuat halaman `form` untuk menambahkan barang baru ke database.
+- Karena sebelumnya saya sudah membuat page untuk katalog barang-barang (mockup), saya hanya menambahkan menambahkan tombol untuk menambahkan barang baru di bagian bawah katalog yang akan meredirect halaman ke `form`.
+- Untuk halaman yang menampilkan detail barang, sudah saya implementasikan dari minggu sebelumnya.
+- Selanjutnya saya melanjutkan isi file `README.md` yang sudah ada dari minggu sebelumnya.
+- Terakhir, saya menguji data delivery aplikasi menggunakan software **Postman**.
+
+### `show_xml`
+
+![show_xml](https://cdn.discordapp.com/attachments/1277292036709548065/1417127133343645839/image.png?ex=68c959fd&is=68c8087d&hm=4f78476075ef82f89ddce72fd5bcde7f3724e80bf6d9a3c52eb9f5773c606e7f)
+
+### `show_xml_by_id`
+
+![show_xml_by_id](https://cdn.discordapp.com/attachments/1277292036709548065/1417127328945017018/image.png?ex=68c95a2c&is=68c808ac&hm=6019c779243f77f5150bc2359b71a4934fdbe16089413e9a86d0351c9acf98bb)
+
+### `show_json`
+
+![show_json](https://cdn.discordapp.com/attachments/1277292036709548065/1417127513104060536/image.png?ex=68c95a58&is=68c808d8&hm=24fc9ba9e54f0070a5defb0a42b9c69d1dc2f64f80e5870c9fe89eda497d0ef7)
+
+### `show_json_by_id`
+
+![show_json_by_id](https://cdn.discordapp.com/attachments/1277292036709548065/1417127523233562675/image.png?ex=68c95a5a&is=68c808da&hm=cb12278a64e54750c4b77cd781a59da17e96c50bd21ac45113e7c03a52fef0f0)
+
+## Apakah ada feedback untuk asdos di tutorial 2 yang sudah kalian kerjakan?
+
+Tetap mantap dan pertahankan saja :)
