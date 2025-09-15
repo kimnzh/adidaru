@@ -11,7 +11,9 @@
 <section class="mb-12">
   <h2 class="text-3xl font-bold text-gray-800 mb-6">Featured Products</h2>
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-    {% for product in featured_products %}
+    {% if not featured_products %}
+    <div>Gaada yang featured woe</div>
+    {% else %} {% for product in featured_products %}
     <div
       class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300"
     >
@@ -24,7 +26,7 @@
         <h3 class="text-xl font-semibold mb-2">{{ product.name }}</h3>
         <p class="text-gray-600 mb-4">{{ product.category|title }}</p>
         <div class="flex justify-between items-center">
-          <span class="text-2xl font-bold text-gray-900">${{ product.price }}</span>
+          <span class="text-2xl font-bold text-gray-900">Rp{{ product.price }}</span>
           <a
             href="{% url 'store:product_detail' product.id %}"
             class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
@@ -33,7 +35,7 @@
         </div>
       </div>
     </div>
-    {% endfor %}
+    {% endfor %} {% endif %}
   </div>
 </section>
 
@@ -41,9 +43,11 @@
 <section>
   <h2 class="text-3xl font-bold text-gray-800 mb-6">All Products</h2>
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-    {% for product in all_products %}
+    {% if not all_products %}
+    <div>Belom ada produk woe</div>
+    {% else %} {% for product in all_products %}
     <div
-      class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300"
+      class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 mb-6"
     >
       <a href="{% url 'store:product_detail' product.id %}">
         <img
@@ -54,11 +58,16 @@
         <div class="p-6">
           <h3 class="text-lg font-semibold text-gray-800">{{ product.name }}</h3>
           <p class="text-gray-500 text-sm mt-1">{{ product.category|title }}</p>
-          <p class="text-lg font-bold text-gray-900 mt-2">${{ product.price }}</p>
+          <p class="text-lg font-bold text-gray-900 mt-2">Rp{{ product.price }}</p>
         </div>
       </a>
     </div>
-    {% endfor %}
+    {% endfor %} {% endif %}
   </div>
+  <a
+    href="{% url 'store:add_product' %}"
+    class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+    >Add Product</a
+  >
 </section>
 {% endblock %}

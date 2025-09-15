@@ -28,6 +28,7 @@
       </div>
 
       <!-- Add to Cart Form -->
+      {% comment %}
       <form action="{% url 'store:cart' %}" method="POST">
         {% csrf_token %}
         <input type="hidden" name="product_id" value="{{ product.id }}" />
@@ -57,6 +58,7 @@
           Add to Cart
         </button>
       </form>
+      {% endcomment %}
     </div>
   </div>
 </div>

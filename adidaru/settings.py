@@ -32,6 +32,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "muhamad-hakim41-adidaru.pbp.cs.ui.ac.id"]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000/",
+    "https://muhamad-hakim41-adidaru.pbp.cs.ui.ac.id"
+]
+
 
 # Application definition
 
@@ -60,7 +65,7 @@ ROOT_URLCONF = 'adidaru.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
