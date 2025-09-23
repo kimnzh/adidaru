@@ -95,3 +95,38 @@ Untuk memvalidasi bahwa data yang diperoleh dari form tidak memberikan error apa
 ## Apakah ada feedback untuk asdos di tutorial 2 yang sudah kalian kerjakan?
 
 Tetap mantap dan pertahankan saja :)
+
+# Tugas 4
+
+## Apa itu Django `AuthenticationForm`? Jelaskan juga kelebihan dan kekurangannya.
+
+`AuthenticationForm` di Django adalah sebuah built-in class untuk melakukan autentikasi user ke dalam aplikasi Django. Autentikasi di sini bermakna login dan akan menyimpan session user ke dalam aplikasi.
+
+Referensi: [Django Documentation](https://docs.djangoproject.com/en/5.2/topics/auth/default/)
+
+## Apa perbedaan antara autentikasi dan otorisasi? Bagaiamana Django mengimplementasikan kedua konsep tersebut?
+
+- **Autentikasi** adalah pemastian dan verifikasi identitas seorang pengguna menggunakan kredensial seperti email, username, password, dan lainnya.
+
+- **Otorisasi** adalah pemberiasn akses terhadap suatu data, halaman atau fitur di dalam aplikasi untuk pengguna yang terautentikasi.
+
+Referensi: [GeeksForGeeks](https://www.geeksforgeeks.org/computer-networks/difference-between-authentication-and-authorization/)
+
+## Apa saja kelebihan dan kekurangan _session_ dan _cookies_ dalam konteks menyimpan _state_ di aplikasi web?
+
+- **Session** memiliki kelebihan yaitu keamanan data autentikasi karena tersimpan di dalam server, kekurangannya adalah serrver akan cepat penuh jika terdapat banyak _session_ dalam satu waktu.
+
+- **Cookie** memiliki kelebihan yaitu karena tersimpan di client-side, maka server tidak akan overload untuk menyimpan datanya. Kekurangannya adalah kurang aman karena bisa saja diakses oleh orang lain jika token cookies bocor.
+
+Referensi: [GeeksForGeeks](https://www.geeksforgeeks.org/javascript/difference-between-session-and-cookies/)
+
+## Apakah penggunaan _cookies_ aman secara default dalam pengembangan web, atau apakah ada risiko potensial yang harus diwaspadai? Bagaimana Django menangani hal tersebut?
+
+**Cookies** secara umum tidak aman karena ada beberapa jenis serangan siber seperti _Session hijacking_, _Cross-Site Request Forgery_ dan lainnya. Django menangani ini dengan menyimpan session di dalam server, bukan dari token yang disimpan di dalam cookies.
+
+## Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara _step-by-step_ (bukan hanya sekadar mengikuti tutorial).
+
+- Mengikuti tahapan yang ada pada tutorial 3, dengan beberapa modifikasi dalam pembuatan template html dan strukturnya.
+- Register 2 akun secara langsung di local kemudian push ke pws supaya database juga update.
+- Menggunakan foreign key user_id yang diambil dari id pada model User bawaan Django.
+- Menambahkan context ke dalam page home supaya tampil di bagian navbar (saat hover username).
