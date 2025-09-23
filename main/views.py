@@ -1,9 +1,60 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.http import HttpResponse
 from django.core import serializers
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from main.models import Product
-from main.forms import ProductForm
+from main.forms import ProductForm, CustomUserCreationForm, CustomAuthenticationForm
+import datetime
 
+def register(request):
+    """
+    View for the register page.
+    """
+    if request.method == "POST":
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('main:login')
+    else:
+        form = CustomUserCreationForm()
+    context = {'form':form}
+    return render(request, 'store/register.html', context)
+
+def login_user(request):
+    """
+    Views for user login
+    """
+    if request.method == 'POST':
+        form = CustomAuthenticationForm(data=request.POST)
+
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            response = HttpResponseRedirect(reverse("main:home"))
+            response.set_cookie('last_login', str(datetime.datetime.now()))
+            return response
+
+    else:
+        form = CustomAuthenticationForm(request)
+    context = {'form': form}
+    return render(request, 'store/login.html', context)
+
+@login_required(login_url='/login')
+def logout_user(request):
+    """
+    Views for user logout
+    """
+    logout(request)
+    response = redirect('main:login')
+    response.set_cookie('last_login', str(datetime.datetime.now()))
+    return response
+
+@login_required(login_url='/login')
 def home(request):
     """
     View for the home page, displaying featured products and a list of all products.
@@ -13,9 +64,11 @@ def home(request):
     context = {
         'featured_products': featured_products,
         'all_products': all_products,
+        'last_login': request.COOKIES.get('last_login', 'Never')
     }
     return render(request, 'store/home.html', context)
 
+@login_required(login_url='/login')
 def product_detail(request, product_id):
     """
     View for a single product's detail page.
@@ -46,12 +99,14 @@ def product_detail(request, product_id):
 #     }
 #     return render(request, 'store/cart.html', context)
 
+@login_required(login_url='/login')
 def checkout(request):
     """
     View for the checkout page.
     """
     return render(request, 'store/checkout.html')
 
+@login_required(login_url='/login')
 def add_product(request):
     """
     To add new product to the catalogue.
@@ -59,7 +114,9 @@ def add_product(request):
     form = ProductForm(request.POST or None)
 
     if form.is_valid() and request.method == "POST":
-        form.save()
+        product = form.save(commit=False)
+        product.user = request.user
+        product.save()
         return redirect("main:home")
     
     context = {'form': form}
