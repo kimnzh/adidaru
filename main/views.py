@@ -128,7 +128,7 @@ def add_product(request):
 @login_required(login_url='/login')
 def delete_product(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    if request.user == product.user:
+    if not product.user or request.user == product.user:
         product.delete()
         messages.success(request, 'Product deleted successfully!')
     else:
@@ -138,7 +138,7 @@ def delete_product(request, product_id):
 @login_required(login_url='/login')
 def edit_product(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    if request.user == product.user:
+    if not product.user or request.user == product.user:
         form = ProductForm(request.POST or None, instance=product)
         if form.is_valid() and request.method == 'POST':
             form.save()
