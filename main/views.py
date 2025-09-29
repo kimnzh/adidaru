@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.http import HttpResponse
 from django.core import serializers
@@ -29,6 +29,9 @@ def login_user(request):
     """
     Views for user login
     """
+    if request.user.is_authenticated:
+        return redirect('main:home')
+
     if request.method == 'POST':
         form = CustomAuthenticationForm(data=request.POST)
 
@@ -122,6 +125,37 @@ def add_product(request):
     context = {'form': form}
     return render(request, "store/add_product.html", context)
 
+@login_required(login_url='/login')
+def delete_product(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    if request.user == product.user:
+        product.delete()
+        messages.success(request, 'Product deleted successfully!')
+    else:
+        messages.error(request, 'You are not authorized to delete this product.')
+    return HttpResponseRedirect(reverse('main:home'))
+
+@login_required(login_url='/login')
+def edit_product(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    if request.user == product.user:
+        form = ProductForm(request.POST or None, instance=product)
+        if form.is_valid() and request.method == 'POST':
+            form.save()
+            return redirect('main:home')
+
+        context = {
+            'form': form
+        }
+        
+        return render(request, "store/edit_product.html", context)
+    else:
+        messages.error(request, 'You are not authorized to edit this product.')
+    return HttpResponseRedirect(reverse('main:home'))
+
+# @login_required(login_url="/login")
+# def  
+
 def show_xml(request):
     """
     To show Product data in XML.
@@ -153,3 +187,4 @@ def show_json_by_id(request, product_id):
     product_item = Product.objects.get(pk=product_id)
     json_data = serializers.serialize("json", [product_item])
     return HttpResponse(json_data, content_type="application/json")
+

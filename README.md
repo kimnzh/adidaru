@@ -58,15 +58,15 @@ Data delivery merupakan salah satu aspek krusial dalam sebuah platform, karena p
 
 Menurut saya, **JSON** lebih baik daripada **XML** karena data mentah **JSON** lebih mudah dibaca daripada **XML**. **JSON** (JavaScript Object Notation) lebih populer daripada **XML** karena lebih sederhana dan cenderung lebih kompatibel dengan web browser, karena kebanyakan web browser menggunakan **JavaScript** sebagai scripting languagenya.
 
-## Jelaskan fungsi dari method `is_valid()` pada form Django dan mengapa kita membutuhkan method tersebut?
+## 3. Jelaskan fungsi dari method `is_valid()` pada form Django dan mengapa kita membutuhkan method tersebut?
 
 Untuk memvalidasi bahwa data yang diperoleh dari form tidak memberikan error apapun. Methid akan mengembalikan nilai `True` jika tidak ada error dan akan mengembalikan nilai `False` jika terdapat error dalam form. Error dapat berupa data yang tidak kompatibel dengan nilai yang seharusnya ataupun melebihi batasan-batasan yang sudah ditentukan oleh program (tipe data, maksimal ukuran data, dll).
 
-## Mengapa kita membutuhkan `csrf_token` saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan `csrf_token` pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?
+## 4. Mengapa kita membutuhkan `csrf_token` saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan `csrf_token` pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?
 
 `csrf_token` adalah token yang di generate aplikasi django dalam suatu session yang dimiliki user. Tujuan dari token ini adalah menghindari percobaan penyerangan oleh pengguna yang tidak memiliki otoritas untuk mengakses, memberi input, atau menerima data dari aplikasi django. Maka dari itu, forms memerlukan `csrf_token`
 
-## Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
+## 5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
 
 - Saya mulai dengan mengimplementasikan 4 function di dalam `views.py` sesuai dengan yang didefinisikan di dalam tutorial.
 - Saya kemudian mengaitkan setiap views tersebut dengan path yang sesuai dengan dengan definisi functionnya dalam `views.py`.
@@ -98,13 +98,13 @@ Tetap mantap dan pertahankan saja :)
 
 # Tugas 4
 
-## Apa itu Django `AuthenticationForm`? Jelaskan juga kelebihan dan kekurangannya.
+## 1. Apa itu Django `AuthenticationForm`? Jelaskan juga kelebihan dan kekurangannya.
 
 `AuthenticationForm` di Django adalah sebuah built-in class untuk melakukan autentikasi user ke dalam aplikasi Django. Autentikasi di sini bermakna login dan akan menyimpan session user ke dalam aplikasi.
 
 Referensi: [Django Documentation](https://docs.djangoproject.com/en/5.2/topics/auth/default/)
 
-## Apa perbedaan antara autentikasi dan otorisasi? Bagaiamana Django mengimplementasikan kedua konsep tersebut?
+## 2. Apa perbedaan antara autentikasi dan otorisasi? Bagaiamana Django mengimplementasikan kedua konsep tersebut?
 
 - **Autentikasi** adalah pemastian dan verifikasi identitas seorang pengguna menggunakan kredensial seperti email, username, password, dan lainnya.
 
@@ -112,7 +112,7 @@ Referensi: [Django Documentation](https://docs.djangoproject.com/en/5.2/topics/a
 
 Referensi: [GeeksForGeeks](https://www.geeksforgeeks.org/computer-networks/difference-between-authentication-and-authorization/)
 
-## Apa saja kelebihan dan kekurangan _session_ dan _cookies_ dalam konteks menyimpan _state_ di aplikasi web?
+## 3. Apa saja kelebihan dan kekurangan _session_ dan _cookies_ dalam konteks menyimpan _state_ di aplikasi web?
 
 - **Session** memiliki kelebihan yaitu keamanan data autentikasi karena tersimpan di dalam server, kekurangannya adalah serrver akan cepat penuh jika terdapat banyak _session_ dalam satu waktu.
 
@@ -120,13 +120,93 @@ Referensi: [GeeksForGeeks](https://www.geeksforgeeks.org/computer-networks/diffe
 
 Referensi: [GeeksForGeeks](https://www.geeksforgeeks.org/javascript/difference-between-session-and-cookies/)
 
-## Apakah penggunaan _cookies_ aman secara default dalam pengembangan web, atau apakah ada risiko potensial yang harus diwaspadai? Bagaimana Django menangani hal tersebut?
+## 4. Apakah penggunaan _cookies_ aman secara default dalam pengembangan web, atau apakah ada risiko potensial yang harus diwaspadai? Bagaimana Django menangani hal tersebut?
 
 **Cookies** secara umum tidak aman karena ada beberapa jenis serangan siber seperti _Session hijacking_, _Cross-Site Request Forgery_ dan lainnya. Django menangani ini dengan menyimpan session di dalam server, bukan dari token yang disimpan di dalam cookies.
 
-## Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara _step-by-step_ (bukan hanya sekadar mengikuti tutorial).
+## 5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara _step-by-step_ (bukan hanya sekadar mengikuti tutorial).
 
 - Mengikuti tahapan yang ada pada tutorial 3, dengan beberapa modifikasi dalam pembuatan template html dan strukturnya.
 - Register 2 akun secara langsung di local kemudian push ke pws supaya database juga update.
 - Menggunakan foreign key user_id yang diambil dari id pada model User bawaan Django.
 - Menambahkan context ke dalam page home supaya tampil di bagian navbar (saat hover username).
+
+# Tugas 5
+
+## 1. Jika terdapat beberapa CSS selector untuk suatu elemen HTML, jelaskan urutan prioritas pengambilan CSS selector tersebut!
+
+Berdasarkan prioritasnya, berikut adalah urutan selector dari css:
+
+| Selector                                        | Example                            | Description                                         | Weight |
+| :---------------------------------------------- | :--------------------------------- | :-------------------------------------------------- | :----- |
+| Inline styles                                   | `<h1 style="color: pink;">`        | Highest priority, will override all other selectors |        |
+| Id selectors                                    | `#navbar`                          | Second highest priority                             | 1-0-0  |
+| Classes, attribute selectors and pseudo-classes | `.test`, `[type="text"]`, `:hover` | Third highest priority                              | 0-1-0  |
+| Elements and pseudo-elements                    | `h1`, `::before`, `::after`        | Low priority                                        | 0-0-1  |
+| Universal selector and :where()                 | `*`, `:where()`                    | No priority                                         | 0-0-0  |
+
+Referensi: [W3Schools](https://www.w3schools.com/css/css_specificity.asp)
+
+## 2. Mengapa responsive design menjadi konsep yang penting dalam pengembangan aplikasi web? Berikan contoh aplikasi yang sudah dan belum menerapkan responsive design, serta jelaskan mengapa!
+
+Responsive design penting karena pengguna aplikasi web kemungkinan tidak hanya mengakses melalui satu device saja, namun bisa banyak jenis maupun dimensinya, sehingga responsive design diperlukan supaya kenyamanan pengguna tetap baik di semua device tersebut.
+
+Untuk contoh website yang belum menerapkan responsive design, seharusnya tidak ada secara komersial karena memang propernya website terutama yang bersifat komersial harus responsive.
+
+Untuk contoh website yang sudah menerapkan responsive design adalah seluruh website komersial besar seperti **Youtube**, **Amazon**, dan masih banyak lagi.
+
+## 3. Jelaskan perbedaan antara margin, border, dan padding, serta cara untuk mengimplementasikan ketiga hal tersebut!
+
+![gambar](https://cdn.discordapp.com/attachments/1277292036709548065/1422112521401405521/0_QFVzwn5M81QunEUX.png?ex=68db7cfe&is=68da2b7e&hm=31aa9d29f81eea2287c3d516532f06d5d9a60fcb0e056ea0663628906a525bb7)
+
+- **Margin** : Jarak yang ada **di luar** container.
+
+  Contoh:
+
+  ```css
+  .margin-1 {
+    margin-top: 10px; /* Margin atas */
+    margin-right: 20px; /* Margin kanan */
+    margin-bottom: 10px; /* Margin bawah */
+    margin-left: 20px; /* Margin kiri */
+  }
+  ```
+
+- **Border** : Garis yang ada di frame container.
+
+  Contoh:
+
+  ```css
+  .border-1 {
+    border-width: 2px;
+    border-style: solid; /* Pilihan lain: dotted, dashed, double, dll. */
+    border-color: black;
+  }
+  ```
+
+- **Padding** : Jarak yang ada di antara container dengan konten. Sifatnya berada **di dalam** container.
+
+  Contoh:
+
+  ```css
+  .padding-1 {
+    padding-top: 10px; /* Padding atas */
+    padding-right: 20px; /* Padding kanan */
+    padding-bottom: 10px; /* Padding bawah */
+    padding-left: 20px; /* Padding kiri */
+  }
+  ```
+
+## 4. Jelaskan konsep flex box dan grid layout beserta kegunaannya!
+
+CSS Flexbox adalah fitur tata letak satu dimensi. Tool ini membantu dalam mengalokasikan dan menyelaraskan ruang antar item dalam wadah (terbuat dari box-box). Tool ini berfungsi dengan semua jenis perangkat tampilan dan ukuran layar. Fitur ini bisa digunakan dengan menambahkan styling pada container dengan `display: flex;`
+
+CSS Grid Layout adalah sistem tata letak berbasis box/grid dua dimensi dengan baris dan kolom. Sistem ini memudahkan perancangan halaman web tanpa harus menggunakan `float` dan pemosisian. Seperti tabel, tata letak box/grid memungkinkan kita untuk menyelaraskan elemen ke dalam kolom dan baris.Fitur ini bisa digunakan dengan menambahkan styling `display: grid;`
+
+Referensi: [GeeksForGeeks](https://www.geeksforgeeks.org/css/comparison-between-css-grid-css-flexbox/)
+
+## 5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial)!
+
+- Untuk fitur add dan delete, mostly mengambil template views dari tutorial dengan sedikit modifikasi, terutama dalam pemastian relasi product dan user.
+
+- Untuk styling menggunakan cdn tailwindcss yang sebenarnya sudah diimplementasi semenjak Tugas 2.
