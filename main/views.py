@@ -4,8 +4,9 @@ from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.http import HttpResponse
 from django.core import serializers
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 from main.models import Product
 from main.forms import ProductForm, CustomUserCreationForm, CustomAuthenticationForm
 import datetime
@@ -38,6 +39,7 @@ def login_user(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            messages.success(request, f'Welcome back, {user.username}!')
             response = HttpResponseRedirect(reverse("main:home"))
             response.set_cookie('last_login', str(datetime.datetime.now()))
             return response
@@ -53,6 +55,7 @@ def logout_user(request):
     Views for user logout
     """
     logout(request)
+    messages.success(request, "You have been successfully logged out.")
     response = redirect('main:login')
     response.set_cookie('last_login', str(datetime.datetime.now()))
     return response
@@ -83,6 +86,7 @@ def product_detail(request, product_id):
 
     context = {
         'product': product,
+        'product_id': product_id
     }
     return render(request, 'store/product_detail.html', context)
 
@@ -110,48 +114,49 @@ def checkout(request):
     return render(request, 'store/checkout.html')
 
 @login_required(login_url='/login')
+@require_POST
 def add_product(request):
     """
-    To add new product to the catalogue.
+    To add new product to the catalogue via AJAX.
     """
-    form = ProductForm(request.POST or None)
-
-    if form.is_valid() and request.method == "POST":
+    form = ProductForm(request.POST)
+    if form.is_valid():
         product = form.save(commit=False)
         product.user = request.user
         product.save()
-        return redirect("main:home")
-    
-    context = {'form': form}
-    return render(request, "store/add_product.html", context)
+        return JsonResponse({'status': 'success'}, status=201)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid form data', 'errors': form.errors}, status=400)
 
 @login_required(login_url='/login')
 def delete_product(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    if not product.user or request.user == product.user:
-        product.delete()
-        messages.success(request, 'Product deleted successfully!')
-    else:
+    if product.user and request.user != product.user:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'error', 'message': 'You are not authorized to delete this product.'}, status=403)
         messages.error(request, 'You are not authorized to delete this product.')
+        return HttpResponseRedirect(reverse('main:home'))
+
+    product.delete()
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'status': 'success', 'message': 'Product deleted successfully!'})
+    
+    messages.success(request, 'Product deleted successfully!')
     return HttpResponseRedirect(reverse('main:home'))
 
 @login_required(login_url='/login')
+@require_POST
 def edit_product(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    if not product.user or request.user == product.user:
-        form = ProductForm(request.POST or None, instance=product)
-        if form.is_valid() and request.method == 'POST':
-            form.save()
-            return redirect('main:home')
+    if product.user and request.user != product.user:
+        return JsonResponse({'status': 'error', 'message': 'You are not authorized to edit this product.'}, status=403)
 
-        context = {
-            'form': form
-        }
-        
-        return render(request, "store/edit_product.html", context)
+    form = ProductForm(request.POST, instance=product)
+    if form.is_valid():
+        form.save()
+        return JsonResponse({'status': 'success'})
     else:
-        messages.error(request, 'You are not authorized to edit this product.')
-    return HttpResponseRedirect(reverse('main:home'))
+        return JsonResponse({'status': 'error', 'message': 'Invalid form data', 'errors': form.errors}, status=400)
 
 # @login_required(login_url="/login")
 # def  
@@ -169,8 +174,23 @@ def show_json(request):
     To show Product data in JSON.
     """
     product_list = Product.objects.all()
-    json_data = serializers.serialize("json", product_list)
-    return HttpResponse(json_data, content_type="application/json")
+    data = [
+        {
+            'id': str(product.id),
+            'name': product.name,
+            'price': product.price,
+            'description': product.description,
+            'thumbnail': product.thumbnail,
+            'category': product.category,
+            'stock': product.stock,
+            'is_featured': product.is_featured,
+            'user_id': product.user.id if product.user else None
+            
+        }
+        for product in product_list
+    ]
+
+    return JsonResponse(data, safe=False)
 
 def show_xml_by_id(request, product_id):
     """
@@ -184,7 +204,21 @@ def show_json_by_id(request, product_id):
     """
     To show Product data in JSON by ID.
     """
-    product_item = Product.objects.get(pk=product_id)
-    json_data = serializers.serialize("json", [product_item])
-    return HttpResponse(json_data, content_type="application/json")
+    try:
+        product = Product.objects.select_related('user').get(pk=product_id)
+        data = {
+            'id': str(product.id),
+            'name': product.name,
+            'price': product.price,
+            'description': product.description,
+            'category': product.category,
+            'thumbnail': product.thumbnail,
+            'stock': product.stock,
+            'is_featured': product.is_featured,
+            'user_id': product.user.id if product.user else None,
+            'user_username': product.user.username if product.user else None,
+        }
+        return JsonResponse(data)
+    except Product.DoesNotExist:
+        return JsonResponse({'detail': 'Not found'}, status=404)
 

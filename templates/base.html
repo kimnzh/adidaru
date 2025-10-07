@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -25,10 +26,10 @@
     {% comment %} Navbar {% endcomment %}
     <nav class="bg-white shadow-md sticky top-0 z-50">
       <div class="container mx-auto px-6 py-4 flex justify-between items-center flex">
-        <a href="{% url 'store:home' %}" class="font-bold text-2xl text-gray-800">Adidaru</a>
+        <a href="{% url 'main:home' %}" class="font-bold text-2xl text-gray-800">Adidaru</a>
         <div class="flex">
           {% if user.is_authenticated %}
-          <a href="{% url 'store:home' %}" class="text-gray-600 hover:text-gray-900 mx-3 py-2 px-4">
+          <a href="{% url 'main:home' %}" class="text-gray-600 hover:text-gray-900 mx-3 py-2 px-4">
             Home
           </a>
           <div
@@ -56,7 +57,7 @@
                 Last Login: {{ user.last_login|date:"d M Y, H:i" }}
               </div>
               <a
-                href="{% url 'store:logout' %}"
+                href="{% url 'main:logout' %}"
                 class="block w-full text-left px-4 py-2 text-white text-sm bg-red-500 hover:bg-red-400 rounded-lg transition"
                 >Logout</a
               >
@@ -64,7 +65,7 @@
           </div>
           {% else %}
           <a
-            href="{% url 'store:login' %}"
+            href="{% url 'main:login' %}"
             class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
             >Login</a
           >
@@ -92,11 +93,50 @@
         </div>
       </div>
     </footer>
-
+    {% include 'modal.html' %} {% include 'toast.html' %} {% include 'delete_modal.html' %}
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script>
       lucide.createIcons();
+      function showModal() {
+        const modal = document.getElementById("crudModal");
+        const modalContent = document.getElementById("crudModalContent");
+
+        modal.classList.remove("hidden");
+        setTimeout(() => {
+          modalContent.classList.remove("opacity-0", "scale-95");
+          modalContent.classList.add("opacity-100", "scale-100");
+        }, 50);
+      }
+
+      function hideModal() {
+        const modal = document.getElementById("crudModal");
+        const modalContent = document.getElementById("crudModalContent");
+
+        modalContent.classList.remove("opacity-100", "scale-100");
+        modalContent.classList.add("opacity-0", "scale-95");
+
+        setTimeout(() => {
+          modal.classList.add("hidden");
+        }, 150);
+      }
+
+      function showDeleteModal() {
+        const modal = document.getElementById("deleteConfirmationModal");
+        modal.classList.remove("hidden");
+      }
+
+      function hideDeleteModal() {
+        const modal = document.getElementById("deleteConfirmationModal");
+        modal.classList.add("hidden");
+      }
     </script>
     {% block scripts %}{% endblock scripts %}
+    <script>
+      {% if messages %}
+        {% for message in messages %}
+          showToast("{{ message.tags|capfirst }}", "{{ message }}", "{{ message.tags }}");
+        {% endfor %}
+      {% endif %}
+    </script>
   </body>
 </html>
