@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
   // --- CONFIGURATION ---
   const PRODUCT_API_ENDPOINT = "/json/";
-  const ADD_PRODUCT_URL = "/add/";
-  const EDIT_PRODUCT_BASE_URL = "/edit/";
-  const DELETE_PRODUCT_BASE_URL = "/delete/";
+  const ADD_PRODUCT_URL = "/product/add/";
+  const EDIT_PRODUCT_BASE_URL = "/product/edit/";
+  const DELETE_PRODUCT_BASE_URL = "/product/delete/";
   const CURRENT_USER_ID = document.body.dataset.userId || "";
 
   // --- DOM ELEMENTS ---
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
     productGridContainer.classList.toggle("hidden", !showGrid);
   }
 
-  window.openAddModal = function () {
+  function openAddModal() {
     productForm.reset();
     document.getElementById("productId").value = "";
     document.getElementById("modal-title").innerText = "Create New Product";
@@ -49,9 +49,10 @@ document.addEventListener("DOMContentLoaded", function () {
       .getElementById("submitProduct")
       .classList.add("bg-emerald-500", "hover:bg-emerald-600");
     showModal();
-  };
+  }
+  window.openAddModal = openAddModal;
 
-  window.openEditModal = function (productId) {
+  function openEditModal(productId) {
     const product = allProductsData.find((p) => p.id === productId);
     if (!product) {
       showToast("Error", "Product not found.", "error");
@@ -75,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
       .classList.remove("bg-emerald-500", "hover:bg-emerald-600");
     document.getElementById("submitProduct").classList.add("bg-indigo-500", "hover:bg-indigo-600");
     showModal();
-  };
+  }
 
   function buildProductCardElement(productItem) {
     const productElement = document.createElement("div");
@@ -91,11 +92,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const editDeleteButtons =
       CURRENT_USER_ID && Number(CURRENT_USER_ID) === Number(productItem.user_id)
         ? `<div class='absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
-            <button onclick="event.stopPropagation(); event.preventDefault(); openEditModal(${productItem.id});" class="z-10 relative bg-white/80 backdrop-blur-sm rounded-full p-2 hover:bg-white transition-colors">
-              <i data-lucide="square-pen" class="text-indigo-500 w-5 h-5"></i>
+            <button data-action="edit" data-product-id="${productItem.id}" class="z-10 relative bg-white/80 backdrop-blur-sm rounded-full p-2 hover:bg-white transition-colors">
+              <i data-lucide="square-pen" class="text-indigo-500 w-5 h-5 pointer-events-none"></i>
             </button>
-            <button onclick="event.stopPropagation(); event.preventDefault(); openDeleteModal(${productItem.id});" class="z-10 relative bg-white/80 backdrop-blur-sm rounded-full p-2 hover:bg-white transition-colors">
-              <i data-lucide="trash-2" class="text-red-500 w-5 h-5"></i>
+            <button data-action="delete" data-product-id="${productItem.id}" class="z-10 relative bg-white/80 backdrop-blur-sm rounded-full p-2 hover:bg-white transition-colors">
+              <i data-lucide="trash-2" class="text-red-500 w-5 h-5 pointer-events-none"></i>
             </button>
           </div>`
         : "";
@@ -114,11 +115,13 @@ document.addEventListener("DOMContentLoaded", function () {
             <p class="text-xl font-bold text-indigo-600">Rp${productItem.price.toLocaleString(
               "id-ID"
             )}</p>
-            <button onclick="event.stopPropagation(); event.preventDefault(); addToCart(${
-              productItem.id
-            });" class="bg-emerald-50 text-emerald-600 px-3 py-2 rounded-lg hover:bg-emerald-100 transition-colors">
-                <i data-lucide="plus" class="w-5 h-5"></i>
-            </button>
+            ${
+              CURRENT_USER_ID && Number(CURRENT_USER_ID) !== Number(productItem.user_id)
+                ? `<button onclick="event.stopPropagation(); event.preventDefault(); addToCart(${productItem.id});" class="bg-emerald-50 text-emerald-600 px-3 py-2 rounded-lg hover:bg-emerald-100 transition-colors">
+                      <i data-lucide="plus" class="w-5 h-5"></i>
+                  </button>`
+                : ""
+            }
           </div>
         </div>
       </a>`;
@@ -267,35 +270,94 @@ document.addEventListener("DOMContentLoaded", function () {
       filterAndDisplayProducts();
     });
   });
+});
 
-  window.openDeleteModal = function (productId) {
-    showDeleteModal();
-    const confirmDeleteButton = document.getElementById("confirmDeleteButton");
-    confirmDeleteButton.onclick = async function () {
-      const url = `${DELETE_PRODUCT_BASE_URL}${productId}/`;
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
-            "X-Requested-With": "XMLHttpRequest",
-          },
-        });
-        const result = await response.json();
-        if (result.status === "success") {
-          hideDeleteModal();
-          showToast("Success", "Product deleted successfully!", "success");
+function openDeleteModal(productId) {
+  showDeleteModal();
+  const confirmDeleteButton = document.getElementById("confirmDeleteButton");
+  confirmDeleteButton.onclick = async function () {
+    const url = `/product/delete/${productId}/`;
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      });
+      const result = await response.json();
+      if (result.status === "success") {
+        hideDeleteModal();
+        showToast("Success", "Product deleted successfully!", "success");
+        // Re-fetch products after deletion
+        if (typeof fetchProductsFromServer === "function") {
           fetchProductsFromServer();
         } else {
-          hideDeleteModal();
-          showToast("Error", result.message || "An error occurred.", "error");
+          window.location.reload();
         }
-      } catch (error) {
+      } else {
         hideDeleteModal();
-        showToast("Error", "An unexpected network error occurred.", "error");
+        showToast("Error", result.message || "An error occurred.", "error");
       }
-    };
+    } catch (error) {
+      hideDeleteModal();
+      showToast("Error", "An unexpected network error occurred.", "error");
+    }
   };
+}
+
+function openEditModal(productId) {
+  const product = allProductsData.find((p) => p.id === productId);
+  if (!product) {
+    showToast("Error", "Product not found.", "error");
+    return;
+  }
+  const productForm = document.getElementById("productForm");
+  productForm.reset();
+  document.getElementById("productId").value = product.id;
+  document.getElementById("name").value = product.name;
+  document.getElementById("price").value = product.price;
+  document.getElementById("description").value = product.description;
+  document.getElementById("category").value = product.category;
+  document.getElementById("thumbnail").value = product.thumbnail;
+  document.getElementById("stock").value = product.stock;
+  document.getElementById("is_featured").checked = product.is_featured;
+
+  document.getElementById("modal-title").innerText = "Edit Product";
+  document.getElementById("modal-description").innerText = "Update the details of the product.";
+  document.getElementById("submitProduct").innerText = "Save Changes";
+  document
+    .getElementById("submitProduct")
+    .classList.remove("bg-emerald-500", "hover:bg-emerald-600");
+  document.getElementById("submitProduct").classList.add("bg-indigo-500", "hover:bg-indigo-600");
+  showModal();
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  // ... (rest of the DOMContentLoaded code)
+
+  function handleGridClick(event) {
+    const button = event.target.closest("[data-action]");
+    if (!button) return;
+
+    const action = button.dataset.action;
+    const productId = button.dataset.productId;
+
+    console.log("Button clicked!", { action, productId });
+
+    if (!action || !productId) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (action === "edit") {
+      openEditModal(productId);
+    } else if (action === "delete") {
+      openDeleteModal(productId);
+    }
+  }
+
+  document.body.addEventListener("click", handleGridClick);
 
   // --- INITIALIZATION ---
   fetchProductsFromServer();

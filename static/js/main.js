@@ -30,3 +30,16 @@ function hideDeleteModal() {
   const modal = document.getElementById("deleteConfirmationModal");
   modal.classList.add("hidden");
 }
+
+function togglePasswordVisibility(fieldId) {
+  const passwordField = document.getElementById(fieldId);
+  const icon = passwordField.nextElementSibling.querySelector("i");
+  if (passwordField.type === "password") {
+    passwordField.type = "text";
+    icon.setAttribute("data-lucide", "eye-off");
+  } else {
+    passwordField.type = "password";
+    icon.setAttribute("data-lucide", "eye");
+  }
+  lucide.createIcons();
+}

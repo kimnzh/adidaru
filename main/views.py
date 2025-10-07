@@ -15,6 +15,8 @@ import datetime
 @require_POST
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+    if product.user == request.user:
+        return JsonResponse({'status': 'error', 'message': 'You cannot add your own product to the cart.'}, status=403)
     cart, _ = Cart.objects.get_or_create(user=request.user)
     cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
 
@@ -22,10 +24,8 @@ def add_to_cart(request, product_id):
         cart_item.quantity += 1
         cart_item.save()
 
-    total_items = cart.items.count()
-
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse({'status': 'success', 'cart_total': total_items})
+        return JsonResponse({'status': 'success', 'cart_total': cart.total_quantity})
     
     messages.success(request, f'Added {product.name} to your cart.')
     return redirect('main:home')
@@ -52,6 +52,9 @@ def register(request):
     """
     View for the register page.
     """
+    if request.user.is_authenticated:
+        return redirect('main:home')
+        
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -104,10 +107,12 @@ def home(request):
     """
     featured_products = Product.objects.filter(is_featured=True)
     all_products = Product.objects.all()
+    cart, _ = Cart.objects.get_or_create(user=request.user)
     context = {
         'featured_products': featured_products,
         'all_products': all_products,
-        'last_login': request.COOKIES.get('last_login', 'Never')
+        'last_login': request.COOKIES.get('last_login', 'Never'),
+        'cart': cart
     }
     return render(request, 'store/home.html', context)
 
@@ -160,6 +165,7 @@ def add_product(request):
     if form.is_valid():
         product = form.save(commit=False)
         product.user = request.user
+        product.is_featured = request.POST.get('is_featured') == 'on'
         product.save()
         return JsonResponse({'status': 'success'}, status=201)
     else:
@@ -190,7 +196,9 @@ def edit_product(request, product_id):
 
     form = ProductForm(request.POST, instance=product)
     if form.is_valid():
-        form.save()
+        product = form.save(commit=False)
+        product.is_featured = request.POST.get('is_featured') == 'on'
+        product.save()
         return JsonResponse({'status': 'success'})
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid form data', 'errors': form.errors}, status=400)
@@ -210,7 +218,7 @@ def show_json(request):
     """
     To show Product data in JSON.
     """
-    product_list = Product.objects.all()
+    product_list = Product.objects.select_related('user').all()
     data = [
         {
             'id': str(product.id),

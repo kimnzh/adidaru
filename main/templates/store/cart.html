@@ -1,51 +1,91 @@
-{% extends 'base.html' %} {% block content %}
-<div class="bg-white rounded-lg shadow-lg p-8">
-  <h1 class="text-3xl font-bold text-gray-800 mb-6">Your Shopping Cart</h1>
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="max-w-4xl mx-auto">
+  <h1 class="text-4xl font-bold text-emerald-600 mb-8">Your Shopping Cart</h1>
 
-  {% if cart_items %}
-  <div class="divide-y divide-gray-200">
-    <!-- Cart Items Loop -->
-    {% for item in cart_items %}
-    <div class="flex items-center py-4">
-      <img
-        src="{{ item.product.thumbnail }}"
-        alt="{{ item.product.name }}"
-        class="w-24 h-24 object-cover rounded-lg mr-6"
-      />
-      <div class="flex-grow">
-        <h2 class="text-lg font-semibold">{{ item.product.name }}</h2>
-        <p class="text-gray-500">${{ item.product.price }}</p>
+  {% if cart.items.all %}
+  <div class="bg-white rounded-2xl shadow-xl p-8">
+    <div class="divide-y divide-gray-200">
+      <!-- Cart Items Loop -->
+      {% for item in cart.items.all %}
+      <div class="flex items-center py-6">
+        <img
+          src="{{ item.product.thumbnail }}"
+          alt="{{ item.product.name }}"
+          class="w-28 h-28 object-cover rounded-xl mr-6"
+        />
+        <div class="flex-grow">
+          <h2 class="text-lg font-semibold text-gray-800">{{ item.product.name }}</h2>
+          <p class="text-gray-500">Rp{{ item.product.price|floatformat:2 }}</p>
+          <p class="text-sm text-gray-500 mt-1">Quantity: {{ item.quantity }}</p>
+        </div>
+        <div class="text-right">
+          <p class="font-bold text-lg text-indigo-600">Rp{{ item.total_price|floatformat:2 }}</p>
+          <button
+            onclick="removeFromCart({{ item.id }})"
+            class="mt-2 text-red-500 hover:text-red-700 transition-colors text-sm"
+          >
+            <i data-lucide="trash-2" class="w-4 h-4 inline-block mr-1"></i>Remove
+          </button>
+        </div>
       </div>
-      <div class="flex items-center">
-        <span class="mx-4">Qty: {{ item.quantity }}</span>
-        <p class="font-bold text-lg">${{ item.product.price|floatformat:2 }}</p>
-      </div>
-      <button class="ml-6 text-red-500 hover:text-red-700">&times;</button>
+      {% endfor %}
     </div>
-    {% endfor %}
-  </div>
 
-  <!-- Cart Summary -->
-  <div class="mt-8 pt-6 border-t border-gray-200 text-right">
-    <h2 class="text-2xl font-bold">Total: ${{ total_price|floatformat:2 }}</h2>
-    <a
-      href="{% url 'store:checkout' %}"
-      class="mt-4 inline-block bg-gray-800 text-white py-3 px-8 rounded-lg font-semibold text-lg hover:bg-gray-700 transition-colors"
-    >
-      Proceed to Checkout
-    </a>
+    <!-- Cart Summary -->
+    <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between items-center">
+      <h2 class="text-2xl font-bold text-gray-800">Total:</h2>
+      <p class="text-3xl font-bold text-emerald-600">Rp{{ cart.total_price|floatformat:2 }}</p>
+    </div>
+    <div class="mt-8 text-right">
+      <a
+        href="{% url 'main:checkout' %}"
+        class="inline-block bg-emerald-500 text-white py-4 px-10 rounded-lg font-semibold text-lg hover:bg-emerald-600 transition-colors"
+      >
+        Proceed to Checkout
+      </a>
+    </div>
   </div>
-
   {% else %}
-  <p class="text-center text-gray-600 py-12">Your cart is empty.</p>
-  <div class="text-center">
+  <div class="text-center bg-white rounded-2xl shadow-xl p-16">
+    <div class="w-32 h-32 mx-auto mb-6 text-gray-300">
+      <i data-lucide="shopping-cart" class="w-full h-full"></i>
+    </div>
+    <h2 class="text-2xl font-semibold text-gray-800 mb-2">Your cart is empty.</h2>
+    <p class="text-gray-500 mb-8">Looks like you haven't added anything to your cart yet.</p>
     <a
-      href="{% url 'store:home' %}"
-      class="mt-4 inline-block bg-gray-800 text-white py-3 px-8 rounded-lg font-semibold text-lg hover:bg-gray-700 transition-colors"
+      href="{% url 'main:home' %}"
+      class="inline-block bg-emerald-500 text-white py-3 px-8 rounded-lg font-semibold text-lg hover:bg-emerald-600 transition-colors"
     >
       Start Shopping
     </a>
   </div>
   {% endif %}
 </div>
-{% endblock %}
+{% endblock %} {% block scripts %}
+<script>
+  async function removeFromCart(itemId) {
+    if (!confirm("Are you sure you want to remove this item?")) return;
+
+    try {
+      const response = await fetch(`/remove-from-cart/${itemId}/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      });
+      const result = await response.json();
+      if (result.status === "success") {
+        showToast("Success", "Item removed from cart.", "success");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+        showToast("Error", result.message || "An error occurred.", "error");
+      }
+    } catch (error) {
+      showToast("Error", "An unexpected network error occurred.", "error");
+    }
+  }
+</script>
+{% endblock scripts %}
