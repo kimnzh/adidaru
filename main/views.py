@@ -7,9 +7,46 @@ from django.core import serializers
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-from main.models import Product
+from main.models import Product, Cart, CartItem
 from main.forms import ProductForm, CustomUserCreationForm, CustomAuthenticationForm
 import datetime
+
+@login_required
+@require_POST
+def add_to_cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+
+    total_items = cart.items.count()
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'status': 'success', 'cart_total': total_items})
+    
+    messages.success(request, f'Added {product.name} to your cart.')
+    return redirect('main:home')
+
+@login_required
+def view_cart(request):
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    return render(request, 'store/cart.html', {'cart': cart})
+
+@login_required
+@require_POST
+def remove_from_cart(request, item_id):
+    cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
+    cart_item.delete()
+    
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'status': 'success'})
+
+    messages.success(request, 'Item removed from cart.')
+    return redirect('main:cart')
+
 
 def register(request):
     """
@@ -79,7 +116,7 @@ def product_detail(request, product_id):
     """
     View for a single product's detail page.
     """
-    product = Product.objects.get(pk=product_id)
+    product = get_object_or_404(Product, pk=product_id)
 
     if not product:
       return render(request, 'store/error.html', {'message': 'Product not found.'})
@@ -90,21 +127,21 @@ def product_detail(request, product_id):
     }
     return render(request, 'store/product_detail.html', context)
 
-# def cart(request):
-#     """
-#     View for the shopping cart page.
-#     This is a placeholder and doesn't have cart logic yet.
-#     """
-#     mock_cart_items = [
-#         {'product': PRODUCTS[0], 'quantity': 1},
-#         {'product': PRODUCTS[2], 'quantity': 2},
-#     ]
-#     total_price = sum(item['product'].price * item['quantity'] for item in mock_cart_items)
-#     context = {
-#         'cart_items': mock_cart_items,
-#         'total_price': total_price,
-#     }
-#     return render(request, 'store/cart.html', context)
+def cart(request):
+    """
+    View for the shopping cart page.
+    This is a placeholder and doesn't have cart logic yet.
+    """
+    mock_cart_items = [
+        # {'product': PRODUCTS[0], 'quantity': 1},
+        # {'product': PRODUCTS[2], 'quantity': 2},
+    ]
+    total_price = sum(item['product'].price * item['quantity'] for item in mock_cart_items)
+    context = {
+        'cart_items': mock_cart_items,
+        'total_price': total_price,
+    }
+    return render(request, 'store/cart.html', context)
 
 @login_required(login_url='/login')
 def checkout(request):

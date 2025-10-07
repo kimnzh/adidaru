@@ -1,75 +1,95 @@
 {% extends 'base.html' %} {% load static %} {% block content %}
 <!-- Hero Section -->
-<div class="bg-white rounded-lg shadow-lg p-8 md:p-12 mb-12 text-center">
-  <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Gear Up for Greatness</h1>
-  <p class="text-lg text-gray-600">
-    Find the best athletic apparel and footwear to elevate your game.
-  </p>
-  <h1 class="w-full text-left font-bold">Muhamad Hakim Nizami / 2406399485</h1>
+<div
+  class="relative bg-gradient-to-br from-emerald-500 to-indigo-600 rounded-2xl shadow-xl overflow-hidden p-8 md:p-12 mb-12 text-white"
+>
+  <div class="relative z-10 text-center">
+    <h1 class="text-4xl md:text-5xl font-bold mb-4">Gear Up for Greatness</h1>
+    <p class="text-lg text-emerald-100 max-w-2xl mx-auto">
+      Find the best athletic apparel and footwear to elevate your game.
+    </p>
+    <p class="text-sm mt-2 text-indigo-200">Muhamad Hakim Nizami / 2406399485</p>
+  </div>
+  <div class="absolute inset-0 bg-black/20"></div>
 </div>
 
-<!-- All Products Section -->
-<section>
+<!-- Featured Products -->
+<section class="mb-16">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-3xl font-bold text-gray-800">Featured Products</h2>
+    <a href="#all-products" class="text-emerald-600 hover:text-emerald-700 transition-colors"
+      >View All &rarr;</a
+    >
+  </div>
   <div
-    class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 bg-white rounded-lg border border-gray-200 p-4"
+    id="featured-grid"
+    class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8"
+  ></div>
+</section>
+
+<!-- All Products Section -->
+<section id="all-products">
+  <div
+    class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 bg-white rounded-xl border border-gray-200 p-4 shadow-sm"
   >
     <div class="flex flex-wrap items-center gap-3 mb-4 sm:mb-0">
       <button
         data-filter-type="ownership"
         data-filter-value="all"
-        class="filter-btn bg-gray-800 text-white px-4 py-2 rounded-md font-medium transition-colors hover:bg-gray-700"
+        class="filter-btn bg-emerald-500 text-white px-4 py-2 rounded-lg font-medium transition-colors hover:bg-emerald-600"
       >
         All Products
       </button>
       <button
         data-filter-type="ownership"
         data-filter-value="my"
-        class="filter-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md font-medium transition-colors hover:bg-gray-800 hover:text-white"
+        class="filter-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg font-medium transition-colors hover:bg-emerald-500 hover:text-white"
       >
         My Products
       </button>
-      <div class="h-6 w-px bg-gray-300 hidden sm:block"></div>
+      <div class="h-6 w-px bg-gray-200 hidden sm:block"></div>
       <button
         data-filter-type="category"
         data-filter-value="ALL"
-        class="filter-btn-category bg-gray-200 text-gray-800 px-3 py-1 rounded-full font-medium text-sm transition-colors hover:bg-gray-300"
+        class="filter-btn-category bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-medium text-sm transition-colors hover:bg-emerald-200"
       >
         All
       </button>
       <button
         data-filter-type="category"
         data-filter-value="FOOTWEAR"
-        class="filter-btn-category bg-white text-gray-700 px-3 py-1 rounded-full font-medium text-sm transition-colors hover:bg-gray-300"
+        class="filter-btn-category bg-white text-gray-600 px-3 py-1 rounded-full font-medium text-sm transition-colors hover:bg-emerald-100"
       >
         Footwear
       </button>
       <button
         data-filter-type="category"
         data-filter-value="JERSEY"
-        class="filter-btn-category bg-white text-gray-700 px-3 py-1 rounded-full font-medium text-sm transition-colors hover:bg-gray-300"
+        class="filter-btn-category bg-white text-gray-600 px-3 py-1 rounded-full font-medium text-sm transition-colors hover:bg-emerald-100"
       >
         Jersey
       </button>
       <button
         data-filter-type="category"
         data-filter-value="SHORTS"
-        class="filter-btn-category bg-white text-gray-700 px-3 py-1 rounded-full font-medium text-sm transition-colors hover:bg-gray-300"
+        class="filter-btn-category bg-white text-gray-600 px-3 py-1 rounded-full font-medium text-sm transition-colors hover:bg-emerald-100"
       >
         Shorts
       </button>
     </div>
     <button
       onclick="openAddModal()"
-      class="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+      class="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors flex items-center gap-2"
     >
+      <i data-lucide="plus-circle" class="w-5 h-5"></i>
       Add Product
     </button>
   </div>
 
   <!-- Loading State -->
-  <div id="loading" class="bg-white rounded-lg border border-gray-200 p-12 text-center hidden">
+  <div id="loading" class="text-center py-12 hidden">
     <svg
-      class="animate-spin h-8 w-8 text-gray-800 inline-block"
+      class="animate-spin h-8 w-8 text-emerald-500 inline-block"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
@@ -90,11 +110,11 @@
   <!-- Error State -->
   <div
     id="error"
-    class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+    class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg"
     role="alert"
   >
     <strong class="font-bold">Error!</strong>
-    <span class="block sm:inline">Could not load products.</span>
+    <span class="block sm:inline">Could not load products. Please try again later.</span>
   </div>
 
   <!-- Grid -->
@@ -112,275 +132,20 @@
         class="w-full h-full object-contain"
       />
     </div>
-    <h3 class="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-    <p class="text-gray-500 mb-6">Try adjusting your filters or be the first to add a product.</p>
-    <a
-      href="#"
+    <h3 class="text-xl font-semibold text-gray-800 mb-2">No products found</h3>
+    <p class="text-gray-500 mb-6 max-w-sm mx-auto">
+      Try adjusting your filters or be the first to add a product.
+    </p>
+    <button
       onclick="openAddModal()"
-      class="inline-flex items-center px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors"
+      class="inline-flex items-center px-6 py-3 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors"
     >
+      <i data-lucide="plus" class="w-5 h-5 mr-2"></i>
       Add Product
-    </a>
+    </button>
   </div>
 </section>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    // --- CONFIGURATION ---
-    const PRODUCT_API_ENDPOINT = "{% url 'main:show_json' %}";
-    const ADD_PRODUCT_URL = "{% url 'main:add_product' %}";
-    const EDIT_PRODUCT_BASE_URL = "/product/edit/";
-    const DELETE_PRODUCT_BASE_URL = "/product/delete/";
-    const CURRENT_USER_ID = "{{ user.id|default_if_none:'' }}";
-
-    // --- DOM ELEMENTS ---
-    const loadingSpinner = document.getElementById("loading");
-    const errorMessage = document.getElementById("error");
-    const emptyStateDisplay = document.getElementById("empty");
-    const productGridContainer = document.getElementById("grid");
-    const productForm = document.getElementById("productForm");
-    const filterButtons = document.querySelectorAll(".filter-btn");
-    const categoryFilterButtons = document.querySelectorAll(".filter-btn-category");
-
-    // --- STATE ---
-    let activeOwnershipFilter = "all";
-    let activeCategoryFilter = "ALL";
-    let allProductsData = [];
-
-    // --- FUNCTIONS ---
-    function displayPageSection({
-      showLoading = false,
-      showError = false,
-      showEmpty = false,
-      showGrid = false,
-    }) {
-      loadingSpinner.classList.toggle("hidden", !showLoading);
-      errorMessage.classList.toggle("hidden", !showError);
-      emptyStateDisplay.classList.toggle("hidden", !showEmpty);
-      productGridContainer.classList.toggle("hidden", !showGrid);
-    }
-
-    window.openAddModal = function () {
-      productForm.reset();
-      document.getElementById("productId").value = "";
-      document.getElementById("modal-title").innerText = "Create New Product";
-      document.getElementById("modal-description").innerText =
-        "Fill in the details to add a new product.";
-      document.getElementById("submitProduct").innerText = "Add Product";
-      showModal();
-    };
-
-    window.openEditModal = function (productId) {
-      const product = allProductsData.find((p) => p.id === productId);
-      if (!product) {
-        showToast("Error", "Product not found.", "error");
-        return;
-      }
-      productForm.reset();
-      document.getElementById("productId").value = product.id;
-      document.getElementById("name").value = product.name;
-      document.getElementById("price").value = product.price;
-      document.getElementById("description").value = product.description;
-      document.getElementById("category").value = product.category;
-      document.getElementById("thumbnail").value = product.thumbnail;
-      document.getElementById("stock").value = product.stock;
-      document.getElementById("is_featured").checked = product.is_featured;
-
-      document.getElementById("modal-title").innerText = "Edit Product";
-      document.getElementById("modal-description").innerText = "Update the details of the product.";
-      document.getElementById("submitProduct").innerText = "Save Changes";
-      showModal();
-    };
-
-    function buildProductCardElement(productItem) {
-      const productElement = document.createElement("div");
-      productElement.className =
-        "bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 mb-6 flex flex-col";
-
-      const detailLink = `/product/${productItem.id}/`;
-      const deleteLink = `${DELETE_PRODUCT_BASE_URL}${productItem.id}/`;
-
-      const thumbnailHtml = productItem.thumbnail
-        ? `<img src='${productItem.thumbnail}' alt='${productItem.name}' class='w-full h-56 object-cover'>`
-        : `<div class='w-full h-56 bg-gradient-to-br from-gray-100 to-gray-200'></div>`;
-
-      const editDeleteButtons =
-        CURRENT_USER_ID && Number(CURRENT_USER_ID) === Number(productItem.user_id)
-          ? `<div class='flex gap-2'>
-            <button onclick="event.stopPropagation(); event.preventDefault(); openEditModal('${productItem.id}');" class="z-10 relative">
-              <i data-lucide="square-pen" class="text-gray-800 hover:text-gray-700 transition-colors"></i>
-            </button>
-            <button onclick="event.stopPropagation(); event.preventDefault(); openDeleteModal('${productItem.id}');" class="z-10 relative">
-              <i data-lucide="trash-2" class="text-red-500 hover:text-red-400 transition-colors"></i>
-            </button>
-          </div>`
-          : "";
-
-      productElement.innerHTML = `
-        <a href="${detailLink}" class="flex flex-col flex-grow">
-          ${thumbnailHtml}
-          <div class="p-6 flex flex-col flex-grow">
-            <h3 class="text-lg font-semibold text-gray-800">${productItem.name}</h3>
-            <p class="text-gray-500 text-sm mt-1">${productItem.category}</p>
-            <div class="flex-grow"></div>
-            <div class="flex justify-between items-center mt-4">
-              <p class="text-lg font-bold text-gray-900">Rp${productItem.price}</p>
-              ${editDeleteButtons}
-            </div>
-          </div>
-        </a>`;
-      return productElement;
-    }
-
-    function renderAllProductCards(productItems) {
-      productGridContainer.innerHTML = "";
-      productItems.forEach((productItem) => {
-        const cardElement = buildProductCardElement(productItem);
-        productGridContainer.appendChild(cardElement);
-      });
-      lucide.createIcons();
-    }
-
-    function updateFilterButtonsAppearance() {
-      // Ownership filters
-      filterButtons.forEach((button) => {
-        const filterValue = button.getAttribute("data-filter-value");
-        if (filterValue === activeOwnershipFilter) {
-          button.className =
-            "filter-btn bg-gray-800 text-white px-4 py-2 rounded-md font-medium transition-colors hover:bg-gray-700";
-        } else {
-          button.className =
-            "filter-btn bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md font-medium transition-colors hover:bg-gray-800 hover:text-white";
-        }
-      });
-
-      // Category filters
-      categoryFilterButtons.forEach((button) => {
-        const filterValue = button.getAttribute("data-filter-value");
-        if (filterValue === activeCategoryFilter) {
-          button.className =
-            "filter-btn-category bg-gray-200 text-gray-800 px-3 py-1 rounded-full font-medium text-sm transition-colors hover:bg-gray-300";
-        } else {
-          button.className =
-            "filter-btn-category bg-white text-gray-700 px-3 py-1 rounded-full font-medium text-sm transition-colors hover:bg-gray-300";
-        }
-      });
-    }
-
-    function filterAndDisplayProducts() {
-      updateFilterButtonsAppearance();
-
-      let filteredProducts = allProductsData;
-
-      // Filter by ownership
-      if (activeOwnershipFilter === "my") {
-        filteredProducts = filteredProducts.filter(
-          (p) => Number(p.user_id) === Number(CURRENT_USER_ID)
-        );
-      }
-
-      // Filter by category
-      if (activeCategoryFilter !== "ALL") {
-        filteredProducts = filteredProducts.filter((p) => p.category === activeCategoryFilter);
-      }
-
-      if (filteredProducts.length === 0) {
-        displayPageSection({ showEmpty: true });
-      } else {
-        renderAllProductCards(filteredProducts);
-        displayPageSection({ showGrid: true });
-      }
-    }
-
-    async function fetchProductsFromServer() {
-      try {
-        displayPageSection({ showLoading: true });
-        const response = await fetch(PRODUCT_API_ENDPOINT);
-        if (!response.ok) throw new Error("Network response was not ok.");
-        const productData = await response.json();
-        allProductsData = productData || [];
-        filterAndDisplayProducts();
-      } catch (error) {
-        console.error("Error loading products:", error);
-        displayPageSection({ showError: true });
-      }
-    }
-
-    // --- EVENT LISTENERS ---
-    productForm.addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      const productId = formData.get("productId");
-      const isEdit = productId && productId !== "";
-      const url = isEdit ? `${EDIT_PRODUCT_BASE_URL}${productId}/` : ADD_PRODUCT_URL;
-
-      try {
-        const response = await fetch(url, {
-          method: "POST",
-          body: new URLSearchParams(formData),
-          headers: {
-            "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
-            "X-Requested-With": "XMLHttpRequest",
-          },
-        });
-        const result = await response.json();
-        if (result.status === "success") {
-          hideModal();
-          showToast("Success", `Product ${isEdit ? "updated" : "added"} successfully!`, "success");
-          fetchProductsFromServer();
-        } else {
-          showToast("Error", result.message || "An error occurred.", "error");
-        }
-      } catch (error) {
-        showToast("Error", "An unexpected network error occurred.", "error");
-      }
-    });
-
-    filterButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        activeOwnershipFilter = button.getAttribute("data-filter-value");
-        filterAndDisplayProducts();
-      });
-    });
-
-    categoryFilterButtons.forEach((button) => {
-      button.addEventListener("click", () => {
-        activeCategoryFilter = button.getAttribute("data-filter-value");
-        filterAndDisplayProducts();
-      });
-    });
-
-    window.openDeleteModal = function (productId) {
-      showDeleteModal();
-      const confirmDeleteButton = document.getElementById("confirmDeleteButton");
-      confirmDeleteButton.onclick = async function () {
-        const url = `${DELETE_PRODUCT_BASE_URL}${productId}/`;
-        try {
-          const response = await fetch(url, {
-            method: "POST",
-            headers: {
-              "X-CSRFToken": "{{ csrf_token }}",
-              "X-Requested-With": "XMLHttpRequest",
-            },
-          });
-          const result = await response.json();
-          if (result.status === "success") {
-            hideDeleteModal();
-            showToast("Success", "Product deleted successfully!", "success");
-            fetchProductsFromServer();
-          } else {
-            hideDeleteModal();
-            showToast("Error", result.message || "An error occurred.", "error");
-          }
-        } catch (error) {
-          hideDeleteModal();
-          showToast("Error", "An unexpected network error occurred.", "error");
-        }
-      };
-    };
-
-    // --- INITIALIZATION ---
-    fetchProductsFromServer();
-  });
-</script>
-{% endblock %}
+{% endblock %} {% block scripts %}
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock scripts %}
